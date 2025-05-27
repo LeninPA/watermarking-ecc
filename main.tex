@@ -1,0 +1,183 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{longtable}
+\usepackage{enumitem}[shortlabels]					% Para personalizar listas
+\usepackage{dirtytalk}
+
+\usepackage[spanish, mexico]{babel}
+    \decimalpoint
+\usepackage[colorlinks,linkcolor=blue,urlcolor=blue,citecolor=black, breaklinks=true]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shapes}
+\usetikzlibrary{positioning}
+\usetikzlibrary{automata}
+\usetikzlibrary{cd}
+\usepackage{tikz-3dplot}
+\usepackage{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[intlimits]{amsmath}
+\usepackage{physics}
+\usepackage{fullpage}
+% \usepackage[osf,sc]{mathpazo} % Uncomment for Palatino and comment out the next line
+\usepackage[frenchstyle,widermath,narrowiints,fullsumlimits,fullintlimits]{kpfonts} % Comment out and uncomment the previous line for Palatino
+% \linespread{1.5}
+% \usepackage{helvet}
+% \renewcommand{\familydefault}{\sfdefault}
+\usepackage{graphicx}
+\graphicspath{ {./img/} }
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amsxtra}
+\usepackage{amssymb}
+\usepackage{mathdots}
+\usepackage{mathrsfs}
+% \usepackage{microtype}
+\usepackage{stmaryrd}
+\usepackage{titlesec}
+\usepackage{systeme}
+\usepackage[titles]{tocloft}
+\usepackage{textcase}
+\usepackage{setspace}
+    \onehalfspacing
+\usepackage{xfrac}
+\usepackage{mathtools}
+\usepackage{faktor}
+\usepackage{cancel}
+\usepackage{mparhack}
+\usepackage{booktabs}
+\usepackage{multirow}
+%\usepackage[fixlanguage]{babelbib}
+\usepackage{tikz}
+\usepackage{csquotes}
+\usepackage{forest}
+% \usepackage{siunitx}
+\usepackage{xparse}
+\usepackage{svg}
+\usepackage{ytableau} %Diagramas de Young
+\usepackage[
+            hyperref=true, % También puede ser auto
+            style=nature
+            ]{biblatex}
+\addbibresource{biblio.bib}
+\usepackage{nicematrix}
+\usepackage{authblk}
+    \renewcommand*{\Authsep}{, }
+    \renewcommand*{\Authand}{, }
+    \renewcommand*{\Authands}{, }
+%\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{macros_math}
+\NiceMatrixOptions{cell-space-limits = 2pt}
+\usepackage{listings}[language=c]
+% paquetes para obtener el 1 bomnito
+\usepackage[bb=dsserif]{mathalpha}
+\usepackage{bm}
+\newcommand\Bbbbone{%
+  \ifdefined\mathbbb%
+    \mathbbb{1}%
+  \else%
+    \boldsymbol{\mathbb{1}}%
+  \fi}
+
+\pgfdeclarelayer{bg}
+\pgfsetlayers{bg,main}
+
+\tikzset{
+  wrap/.style={
+    line cap=round,
+    #1,
+    line width=21pt,
+    opacity=0.3,
+  },
+  mynode/.style={
+    draw,
+    circle,
+    yshift=-0.5cm,
+    outer sep=0.3cm
+  },
+  group/.style={
+    draw,
+    ellipse,
+    minimum width=3cm,
+    minimum height=6cm
+  },
+}
+
+\newcommand{\ttt}[1]{{\texttt{#1}}}
+
+\usepackage[spanish]{cleveref} 
+
+% \renewcommand{\labelenumi}{\alph{enumi})}
+\title{Proyecto 2 -- Tarea-examen 2}
+\author{
+Lenin Pavón Alvarez
+%\and 
+}
+%
+\date{Abril 2025}
+\allowdisplaybreaks
+\begin{document}
+\maketitle
+\begin{abstract}
+    Los grandes modelos de lenguaje (LLMs por sus siglas en inglés) son capaces de generar texto (y diverso contenido multimedia) a un ritmo sin precedentes. Es así que surge la necesidad de distinguir entre aquellos productos que fueron creados por humanis y aquellos que fueron creados usando LLMs. En este proyecto planeo contrastar la metodología del estado de la técnica \cite{kirchenbauer_watermark_2024} con una metodología más reciente \cite{chao_watermarking_2025} de manera experimental con un conjunto diferente de LLMs y de prompts junto con un grupo de estudiantes ($n\approx 20$). Por último se detallan más a fondo las aseveraciones teóricas de éste último método.
+\end{abstract}
+\paragraph{Palabras clave.} Teoría de Códigos\quad Procesamiento de Lenguaje Natural\quad Grandes Modelos de Lenguaje\quad Códigos Correctores de errores\quad \textit{Robust Binary Code}
+\tableofcontents
+\section{Antecedentes}
+\subsection{Loros estocásticos (Grandes modelos de Lenguaje)}
+Un trabajo que en su momento fue muy controversial (y lo sigue siendo) fue un paper por el cual una de sus autoras (Timnit Gebru) perdió su empleo en Google. En \textit{On the Dangers of Stochastic Parrots: Can language Models Be Too Big} \cite{bender_dangers_2021} las autoras advierten con respecto a la trayectoria preocupante del desarrollo de Modelos de Lenguaje y los peligros asociados a su entrenamiento y uso por la población en general.
+\par Las autoras definen a un modelo de lenguaje como
+\begin{displayquote}
+    we understand the term \textit{language model} to refer to systems whuch are trained on string predicion tasks: that is, predicting the likelihood of a token (character, word or string) given either its preceding context or (in bidirectional and masked LMs) its surrounding contexts.
+\end{displayquote}
+Es así que las autoras los suelen abreviar con LMs (\textit{language models}) por sus siglas en inglés. Actualmente en la literatura se suele usar la abreviación LLMs (\textit{large language models}) haciendo referencia al enorme tamaño de los datasets (datos de entrenamiento) a partir de los cuales se construye el modelo. 
+\par Las autoras presentan un conjunto de varias situaciones problemáticas, en resumen:
+\begin{enumerate}
+    \item Costo ambiental y financiero (\S 3)
+    \item Datos de entrenamiento que superan la capacidad humana de entenderlos y documentarlos (\S 4).
+    \begin{enumerate}
+        \item Aunque se obtiene una gran cantidad de datos, estos no necesariamente son representatitvos de puntos de vista no hegemónicos (e.g. sur global, hablantes de lenguas indígenas, etcétera).
+        \item Aún cuando la realidad social cambia, es costoso reentrenar a los modelos con nuevos datos de entrenamiento. Así los LLMs se quedan con una visión estática de nuevos marcos conceptuales\footnote{No encontré una referencia en línea disponible, pero el Grupo de Ingeniería Lingüística de la UNAM trabaja en detección de homofobia usando modelos de lenguaje.}.
+        \item Al no curar los datos, los LLMs pueden quedar entrenados para replicar los sesgos existentes en sus datos de entrenamiento.
+        \item Al no invertir en la curación de estos datos de entrenamiento se genera una deuda documental con respecto a éstos.
+    \end{enumerate}
+    \item Las salidas (\textit{outputs}) de los LLMs se pueden malinterpretar como entendimiento del lenguaje natural (NLU).
+\end{enumerate}
+Es particularmente este último problema el que origina la necesidad de distinguir entre la salida un LLM y texto\footnote{En el contexto de los LLMs multimodales debemos pensar en texto como cualquier representación digital, ya sea texto plano, audio, imágenes, video, código, etcétera.} producido por un ser humano. Las autoras terminan \S 7 con la siguiente pregunta:
+\begin{displayquote}
+    Could LMs be built in such a way that synthetic text generated with them would be watermarked and thus detectable?
+\end{displayquote}
+\par La respuesta de la industria ha sido ni siquiera entretener la pregunta. ChatGPT se liberó al mundo sin este tipo de \textit{watermarking} que pudiera hacer su salida detectable. Sin embargo han surgido técnicas que permiten identificar la salida de estos LLMs sin necesidad de la cooperación (directa) de sus desarrolladores. Particularmente, ha habido un desarrollo reciente con respecto al uso de códigos correctores de errores para la detección de éstos.
+\subsection{Códigos Correctores de Errores}
+\subsubsection{Tokenización}
+\par Antes de poder comenzar a hablar acerca del uso de códigos correctores de errores (ECC, por sus siglas en inglés) hay que recordar que nuestro espacio es de la forma $\{0,1\}^k$ para alguna $k\in\zz$, es así que necesitamos una manera mediante la cual podamos convertir lenguaje natural a nuestro vocabulario.
+\par Usando Byte-Pair Encoding (BPE) [tkk citar] realizamos un análisis del corpus que nos brinda un vocabulario a nivel subpalabra originalmente pensado para traducción automático pero que se presta para el entrenamiento de diferentes arquitecturas.
+\par Se puede consultar un ejemplo del tokenizador en el siguiente \href{https://colab.research.google.com/drive/1GlNBf0DbZTonpNINr_cJQ9VolosbFdR4?usp=sharing}{notebook}.
+\subsubsection{Definición}
+\section{Watermarking}
+\subsection{Técnicas de watermarking}
+%\subsubsection{Correlated Binary Sampling Channel (CBSC)}
+\subsubsection{Hard Red List}
+\subsubsection{Soft Red List}
+\subsubsection{Robust Binary Code (RBC)}
+\subsection{Detección de watermarking}
+\section{Validación experimental}
+\subsection{GPT2, Llama}
+\subsection{Lenguaje Natural}
+\section{Conclusión}
+\subsection{Análisis de Resultados}
+\subsection{Limitaciones}
+\appendix
+\section{Pruebas detalladas de resultados teóricos}
+\nocite{*}
+\printbibliography
+\end{document}
+
+Al inicio del proyecto se llevó a cabo un proceso de familiarización con la base de código. Consistió sobre todo en una lectura de la documentación existente, y reuniones acerca de las limitaciones actuales y áreas de oportunidad del mismo. Sobre todo se discutió acerca de su adaptación para ejecutarse desde el clúster de supercómputo Atócatl. 
+Una de las grades limitantes al momento de buscar ejecutar el código, era la reproducibilidad del mismo. Se hizo un esfuerzo importante dirigido en dos componentes: hacer explícitos todos los prerrequisitos necesarios para la ejecución del código e identificar el flujo de los diversos programas necesarios y la relación entre ellos. 
+Así se realizó un entorno de \texttt{conda} con todas las librerías necesarias y su respectivo YAML para permitir que cualquier usuario con con \texttt{conda}, \texttt{miniconda}, o \texttt{anaconda} pueda importar su entorno y reproducir el código. Con respecto al segundo punto se realizó un script de bash que tiene dos propósitos. El principal es permitir que un solo programa pueda realizar todas las acciones discretas necesarias para la ejecución final de Spelfig para cada galaxia y el secundario es servir como una documentación que señale la estructura de directorios necesaria para que cada programa pueda identificar la existencia de los archivos de entrada.
+Actualmente se está llevando a cabo una fase de corridas de prueba con una última modificación al código que permite al usuario tener un archivo con los identificadores de las galaxias que desea ejecutar y las manda a ejecutar, permitiendo así tener un control más granular con respecto a qué datos analizir y permite realizar cambios rápidamente sin necesidad de afectar el código fuente.

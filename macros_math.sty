@@ -1,0 +1,67 @@
+% Álgebra
+\newcommand{\card}[1]{\#\left(#1\right)}
+\newcommand{\dif}{\backslash}
+\newcommand{\asig}{\coloneqq}
+\newcommand{\pot}[1]{\mathcal{P}(#1)}
+
+\renewcommand{\d}[1]{\textrm{d}\left(#1\right)}
+%\newcommand{\norm}[1]{\left\|#1\right\|}
+\renewcommand{\t}[1]{\prescript{t}{}{#1}}
+%\newcommand{\rank}{\textrm{rango\ }}
+% Cálculo
+\DeclareMathOperator{\nn}{\mathbb{N}}
+\DeclareMathOperator{\rr}{\mathbb{R}}
+\newcommand{\zz}{\mathbb{Z}}
+\newcommand{\pp}{\mathbb{P}}
+\renewcommand{\qq}{\mathbb{Q}}
+\newcommand{\ii}{\mathbb{I}}
+\newcommand{\kk}{\mathbb{K}}
+\newcommand{\cc}{\mathbb{K}}
+\newcommand{\ctr}{{\mathcal{C}^*}}
+\newcommand{\inv}[1]{{#1}^{-1}}
+% Funciones
+\newcommand{\im}{\textrm{im\ }}
+\newcommand{\dom}[1]{\textrm{Dom}\left(#1\right)}
+\newcommand{\cod}[1]{\textrm{Cod}\left(#1\right)}
+\newcommand{\id}[1]{\textrm{id}_{#1}}
+% Topo
+%\renewcommand{\int}[1]{{#1}^{\circ}}
+\newcommand{\fr}[1]{\partial\left(#1\right)}
+\newcommand{\ext}[1]{\textrm{Ext}\left(#1\right)}
+\newcommand{\cerr}[1]{\overline{#1}}
+\newcommand{\gen}{\textrm{gen}}
+\newcommand{\gr}[1]{\textrm{Gr}\left(#1\right)}
+% Proba
+\newcommand{\p}{\mathbb{P}}
+%\newcommand{\var}[1]{\textrm{Var}\left(#1\right)}
+\newcommand{\e}[1]{\textrm{E}\left(#1\right)}
+\newcommand{\uno}[1][n]{\mathbb{1}_{#1}}
+%Entornos teo
+\newtheorem{theorem}{Teorema}
+\newtheorem{lemma}{Lema}
+\newtheorem{proposition}{Proposición}
+\theoremstyle{definition}
+\newtheorem{condition}{Condición}
+\newtheorem{definition}{Definición}
+\theoremstyle{remark}
+\newtheorem{remark}{Observación}
+\newtheorem{notation}{Notación}
+
+\renewcommand{\phi}{\varphi}
+\NewDocumentCommand{\mat}{O{n}O{\kk}}{\textrm{Mat}_{#2}\left(#1\right)}
+\NewDocumentCommand{\sumat}{O{i}O{1}O{n}}{\sum^{#3}_{#1=#2}}
+\NewDocumentCommand{\serie}{O{k}O{0}O{\infty}}{\sum^{#3}_{#1=#2}}
+\NewDocumentCommand{\poli}{O{n}O{x}}{P_{#1}\left[#2\right]}
+\NewDocumentCommand{\qpoli}{O{m}O{n}O{x}}{Q_{#1,#2}\left[#2\right]}
+\newcommand{\cero}{\overline{0}}
+\NewDocumentCommand{\suc}{O{k}O{\infty}O{1}m}{\left\{#4\right\}_{#1=#3}^{#2}}
+\NewDocumentCommand{\psuc}{O{k}O{\infty}O{1}m}{\left(#4\right)_{#1=#3}^{#2}}
+\newcommand{\nulls}{\textrm{null}\ }
+\newcommand{\diag}{\textrm{diag}}
+\newcommand{\tensor}{\otimes}
+\newcommand{\bigtensor}{\bigotimes}
+\newcommand{\sumdir}{\oplus}
+\newcommand{\bigsumdir}{\bigoplus}
+\newcommand{\cugna}{\wedge}
+\newcommand{\bigcugna}{\bigwedge}
+\newcommand{\fl}{\textrm{fl}}

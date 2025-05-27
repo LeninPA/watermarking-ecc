@@ -1,0 +1,103 @@
+@inproceedings{bender_dangers_2021,
+	address = {Virtual Event Canada},
+	title = {On the {Dangers} of {Stochastic} {Parrots}: {Can} {Language} {Models} {Be} {Too} {Big}? ��},
+	isbn = {9781450383097},
+	shorttitle = {On the {Dangers} of {Stochastic} {Parrots}},
+	url = {https://dl.acm.org/doi/10.1145/3442188.3445922},
+	doi = {10.1145/3442188.3445922},
+	language = {en},
+	urldate = {2025-05-27},
+	booktitle = {Proceedings of the 2021 {ACM} {Conference} on {Fairness}, {Accountability}, and {Transparency}},
+	publisher = {ACM},
+	author = {Bender, Emily M. and Gebru, Timnit and McMillan-Major, Angelina and Shmitchell, Shmargaret},
+	month = mar,
+	year = {2021},
+	pages = {610--623},
+}
+@misc{chao_watermarking_2025,
+	title = {Watermarking {Language} {Models} with {Error} {Correcting} {Codes}},
+	url = {http://arxiv.org/abs/2406.10281},
+	doi = {10.48550/arXiv.2406.10281},
+	abstract = {Recent progress in large language models enables the creation of realistic machine-generated content. Watermarking is a promising approach to distinguish machine-generated text from human text, embedding statistical signals in the output that are ideally undetectable to humans. We propose a watermarking framework that encodes such signals through an error correcting code. Our method, termed robust binary code (RBC) watermark, introduces no distortion compared to the original probability distribution, and no noticeable degradation in quality. We evaluate our watermark on base and instruction fine-tuned models and find our watermark is robust to edits, deletions, and translations. We provide an information-theoretic perspective on watermarking, a powerful statistical test for detection and for generating p-values, and theoretical guarantees. Our empirical findings suggest our watermark is fast, powerful, and robust, comparing favorably to the state-of-the-art.},
+	urldate = {2025-04-25},
+	publisher = {arXiv},
+	author = {Chao, Patrick and Sun, Yan and Dobriban, Edgar and Hassani, Hamed},
+	month = feb,
+	year = {2025},
+	note = {arXiv:2406.10281},
+	keywords = {Computer Science - Cryptography and Security, Computer Science - Computation and Language, Computer Science - Machine Learning},
+}
+
+@misc{kirchenbauer_watermark_2024,
+	title = {A {Watermark} for {Large} {Language} {Models}},
+	url = {http://arxiv.org/abs/2301.10226},
+	doi = {10.48550/arXiv.2301.10226},
+	abstract = {Potential harms of large language models can be mitigated by watermarking model output, i.e., embedding signals into generated text that are invisible to humans but algorithmically detectable from a short span of tokens. We propose a watermarking framework for proprietary language models. The watermark can be embedded with negligible impact on text quality, and can be detected using an efficient open-source algorithm without access to the language model API or parameters. The watermark works by selecting a randomized set of "green" tokens before a word is generated, and then softly promoting use of green tokens during sampling. We propose a statistical test for detecting the watermark with interpretable p-values, and derive an information-theoretic framework for analyzing the sensitivity of the watermark. We test the watermark using a multi-billion parameter model from the Open Pretrained Transformer (OPT) family, and discuss robustness and security.},
+	urldate = {2025-04-25},
+	publisher = {arXiv},
+	author = {Kirchenbauer, John and Geiping, Jonas and Wen, Yuxin and Katz, Jonathan and Miers, Ian and Goldstein, Tom},
+	month = may,
+	year = {2024},
+	note = {arXiv:2301.10226},
+	keywords = {Computer Science - Machine Learning, Computer Science - Computation and Language, Computer Science - Cryptography and Security},
+}
+
+@article{beckmann_natural_1971,
+	title = {Natural languages as error-correcting codes},
+	volume = {28},
+	copyright = {https://www.elsevier.com/tdm/userlicense/1.0/},
+	issn = {00243841},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/002438417190060X},
+	doi = {10.1016/0024-3841(71)90060-X},
+	language = {en},
+	urldate = {2025-04-25},
+	journal = {Lingua},
+	author = {Beckmann, Petr},
+	month = jan,
+	year = {1971},
+	pages = {251--264},
+}
+
+@misc{kaplan_error-correcting_2022,
+	title = {Error-{Correcting} {Codes}: {The} {Mathematics} of {Communication}},
+	url = {https://www.math.uci.edu/~nckaplan/research_files/momath_slides.pdf},
+	language = {en},
+	author = {Kaplan, Nathan},
+	month = jul,
+	year = {2022},
+}
+
+@misc{kerl_introduction_2004,
+	title = {An introduction to coding theory for mathematics students},
+	url = {https://johnkerl.org/doc/kerl-ecc-intro.pdf},
+	abstract = {The following are notes for a lecture presented on September 29, 2004 as part of the Arizona
+State University Department of Mathematics Graduate Student Seminar Series.
+In this talk, intended for a general audience, I will give an introduction to coding theory.
+Error-control coding is the study of the efficient detection and correction of errors in a digital
+signal. The essential idea of so-called “block codes” is to divide a message into blocks of bits, then
+add just enough redundant bits to permit recovery of the original information after transmission
+through a noisy medium. The required amount of redundancy depends, of course, on the
+statistics of the transmission medium. The mathematics will be basic linear algebra over F2.
+I will construct a few simple codes, define terms such as rate and minimum distance, discuss
+some upper and lower bounds on both of these parameters, and present some algorithms for
+encoding and decoding},
+	author = {Kerl, John},
+	month = sep,
+	year = {2004},
+}
+
+@phdthesis{calvino_introduction_2019,
+	title = {An {Introduction} to {Coding} {Theory} with {Reed}-{Solomon} {Codes} as a {Real}-{World} {Example}},
+	url = {https://acalvino4.github.io/CodingTheory/CodingTheory.pdf},
+	abstract = {Communication of data is ubiquitous in today’s world. Whether within a
+device or between devices, reliable data transfer is essential to proper function
+of the databases, applications, servers, and computers that comprise today’s
+technological systems. Errors, however, do occur. They must be corrected. And
+math can help.
+Here we present an introduction to coding theory. We will use Reed-Solomon
+Codes as a real-world example demonstrating some of its fundamental principles.},
+	school = {Benedictine College},
+	author = {Calvino, Augustine},
+	month = mar,
+	year = {2019},
+}
