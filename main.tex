@@ -118,12 +118,12 @@ Lenin Pavón Alvarez
 %\and 
 }
 %
-\date{Abril 2025}
+\date{Mayo 2025}
 \allowdisplaybreaks
 \begin{document}
 \maketitle
 \begin{abstract}
-    Los grandes modelos de lenguaje (LLMs por sus siglas en inglés) son capaces de generar texto (y diverso contenido multimedia) a un ritmo sin precedentes. Es así que surge la necesidad de distinguir entre aquellos productos que fueron creados por humanis y aquellos que fueron creados usando LLMs. En este proyecto planeo contrastar la metodología del estado de la técnica \cite{kirchenbauer_watermark_2024} con una metodología más reciente \cite{chao_watermarking_2025} de manera experimental con un conjunto diferente de LLMs y de prompts junto con un grupo de estudiantes ($n\approx 20$). Por último se detallan más a fondo las aseveraciones teóricas de éste último método.
+    Los grandes modelos de lenguaje (LLMs por sus siglas en inglés) son capaces de generar texto (y diverso contenido multimedia) a un ritmo sin precedentes. Es así que surge la necesidad de distinguir entre aquellos productos que fueron creados por humanos y aquellos que fueron creados usando LLMs. En este proyecto planeo explorar y explicar un técnica de watermarking reciente \cite{chao_watermarking_2025} de manera computacional.
 \end{abstract}
 \paragraph{Palabras clave.} Teoría de Códigos\quad Procesamiento de Lenguaje Natural\quad Grandes Modelos de Lenguaje\quad Códigos Correctores de errores\quad \textit{Robust Binary Code}
 \tableofcontents
@@ -154,25 +154,73 @@ Es particularmente este último problema el que origina la necesidad de distingu
 \par La respuesta de la industria ha sido ni siquiera entretener la pregunta. ChatGPT se liberó al mundo sin este tipo de \textit{watermarking} que pudiera hacer su salida detectable. Sin embargo han surgido técnicas que permiten identificar la salida de estos LLMs sin necesidad de la cooperación (directa) de sus desarrolladores. Particularmente, ha habido un desarrollo reciente con respecto al uso de códigos correctores de errores para la detección de éstos.
 \subsection{Códigos Correctores de Errores}
 \subsubsection{Tokenización}
+\label{sec:token}
 \par Antes de poder comenzar a hablar acerca del uso de códigos correctores de errores (ECC, por sus siglas en inglés) hay que recordar que nuestro espacio es de la forma $\{0,1\}^k$ para alguna $k\in\zz$, es así que necesitamos una manera mediante la cual podamos convertir lenguaje natural a nuestro vocabulario.
-\par Usando Byte-Pair Encoding (BPE) [tkk citar] realizamos un análisis del corpus que nos brinda un vocabulario a nivel subpalabra originalmente pensado para traducción automático pero que se presta para el entrenamiento de diferentes arquitecturas.
-\par Se puede consultar un ejemplo del tokenizador en el siguiente \href{https://colab.research.google.com/drive/1GlNBf0DbZTonpNINr_cJQ9VolosbFdR4?usp=sharing}{notebook}.
-\subsubsection{Definición}
+\par Usando Byte-Pair Encoding (BPE) \cite{sennrich_neural_2016} realizamos un análisis del corpus que nos brinda un vocabulario a nivel subpalabra originalmente pensado para traducción automática pero que se presta para el entrenamiento de diferentes arquitecturas. Se puede consultar un ejemplo del tokenizador que usa el LLMs de Meta (llama) en el siguiente \href{https://colab.research.google.com/drive/1GlNBf0DbZTonpNINr_cJQ9VolosbFdR4?usp=sharing}{notebook}.
+\par Por último, lo que resulta de este proceso de tokenización es un identificador único que es capaz de lidiar con palabras que nunca antes ha visto o que son compuestas. En el notebook anterior usé \textit{psiconeuroinmunoendocrinología} y un saludo del náhuatl, y pese a ser cadenas de texto de baja (o nula) frecuencia en los datos de entrenamiento, el modelo es capaz de asociarlos a componentes a nivel subpalabra.
+\subsubsection{Definiciones}
+\label{sec:def}
+Chao et al. \cite{chao_watermarking_2025} toman a $k\in\zz^+$, la distancia de Hamming $d_H$ en $\{0,1\}^k$ con $d_H(u,v)$ la cantidad de coordenadas que difieren entre $u$ y $v$ \cite{kerl_introduction_2004} para así definir 
+\begin{definition}
+    \label{def:ecc}
+    Sean $k,n\in\zz^+$ con $k\leqslant n$, un \textit{código corrector de errores (ECC)} es un mapeo inyectivo $\mathcal{C}:\{0,1\}^k\hookrightarrow\{0,1\}^n$.
+\end{definition}
+\par De aquí se puede definir que la \textit{codificación} de un mensaje $m$ se obtiene aplicándole $\mathcal{C}$ y $\mathcal{C}(m)$ se define como la \textit{codeword} o palabra clave. Por último la tasa de codificación es $k/n$.
+\par De igual manera, podemos definir la distancia de corrección de error de $\mathcal{C}$. Ésta es la $t>0$ más grande tal que para cualquier mensaje arbitrario $m\in\{0,1\}^n$ existe a lo más una palabra clave $c\in\mathcal{C}$ en a bola de centro $m$ y radio $t$ con la distancia de Hamming. En otras palabras buscamos a la $t$ más grande tal que existe una única $c$ que cumple que $d_H(m,c)\leqslant t$. Podemos caracterizar a nuestro código con esta $t$ y podemos decir que $\mathcal{C}$ es un $[n, k, 2t+1]$-código.
+\par Dado un $[n, k, 2t+1]$-código podemos pensar en un mapeo decodificador $\mathcal C^{-1}$. Veamos que está bien definido pues por construcción para cualquier $m\in\{0,1\}^n$ existe a lo más un $c=\mathcal{C}^{-1}(m)$ tal que $d_H(w,c)\leqslant t$. En caso de no existir, la decodificación se puede escoger de manera arbitraria.
 \section{Watermarking}
 \subsection{Técnicas de watermarking}
 %\subsubsection{Correlated Binary Sampling Channel (CBSC)}
 \subsubsection{Hard Red List}
 \subsubsection{Soft Red List}
 \subsubsection{Robust Binary Code (RBC)}
+\par Conectando el \cref{sec:def} y el \cref{sec:token} podemos pensar en el conjunto de datos de entrenamiento que tenemos para un LLM. Posteriormente, podemos descomponerlo a nivel subpalabra, permitiéndonos procesar vocabulario que no se encuentra en nuestro corpus. De cualquier forma, estas subpalabras se asocian a un número que tiene una representación binaria en forma de bits. Es así que para un vocabulario\footnote{de subpalabras, aunque no es forzoso verlo de esta manera. Existen algoritmos diferentes al BPE que son capaces de procesar palabras íntegras como Bag of Words (BoW).} $\mathcal{V}$ de tamaño $|\mathcal V|$ necesitamos $l=\lceil\log_2|\mathcal V|\rceil$. De aquí podemos usar nuestro algoritmo que convierte a binario $\Gamma:\mathcal V\to\{0,1\}^l$.
+\par Ahora podemos pensar en la distribución\footnote{Aunque es una interpretación común pensar en esta distribución, a nivel computacional es muy costoso obtener esta probabilidad. Los atajos computacionales usados como el \textit{top-k sampling} devuelven un número muy cercano al que debería ser la probabilidad real pero formalmente esta distribución no está bien definida. Sin embargo, en su uso cotidiano, no se suele hacer esta distinción.} inducida dado un token cualquiera, como los LLMs se entrenan para servir en tareas de predicción de texto tiene sentido preguntarse
+\begin{displayquote}
+    Dados los primeros $n$ bits, ¿cuál es la probabilidad de que el siguiente bit sea un uno?
+\end{displayquote}
+Denotemos a los primeros $n$ bits como $b_{1:n}$ podemos denotar esta probabilidad con $q_{n+1}$ tal que
+\[q_{n+1}=\pp(B_{n+1}=1|b_{1:n})\]
+Ahora tomemos a nuestro mensaje $m=\{M_i\}_{i=1}^{|m|}\subset\{0,1\}^k$ con $|m|$ la cantidad de tokens en el mensaje. Podemos escoger a un ECC $\mathcal C$ al del cual podemos obtener a una palabra clave $Y_i=\mathcal C(M_i)\in\{0,1,\}^n$. Posteriormente podemos tomar una muestra de bits $(B_i)_{i=1}^n$ correlacionada con $Y_i$.
+\par Para obtener esta muestra definimos una v.a. $B\sim\textrm{Ber}(q)$ con $q\in[0,1]$, por construcción podemos simular una Bernoulli a partir de una v.a. $U'\sim \textrm{Unif}[0,1]$ tal que
+\[B=\uno[\{U'\leqslant q\}]\]
+Una consecuencia inmediata es que $U',B$ son v.a. correlacionadas. Ahora sea veamos que para una $\textrm{Ber}(1,2)$
+\[f(k;\frac{1}{2})=\left(\frac{1}{2}\right)^k\left(\frac{1}{2}\right)^{1-k}=\frac{1}{2}\]
+Es así que podemos observar que $B=\uno[\Big\{\big((1-Y)+U\big)/2\leqslant q\Big\}]\sim \textrm{Ber}(q)$ para $Y\sim\textrm{Ber}\left(\frac{1}{2}\right)$ y $U\sim\textrm{Unif}[0,1]$ vemos que por el parámetro de $Y$ podemos pensar en que $(1-Y)$ nos permite obtener un bit $B\sim\textrm{Ber}(q)$ de una manera no uniforme, sesgada a $Y$. A este proceso se le llama \textit{Correlated Binary Sampling Channel} (CBSC).
+\par Una de las propiedades más importantes que tiene es que $\pp[Y=B]=1-2|1/2-q|\geqslant\frac{1}{2}$. En particular la desigualdad se vuelve estricta cuando $q\not\in\{0,1\}$ (que podemos pensar como una medida de la entropía de $B$ y por tanto cuando $q=0,1$ siempre sabremos cuánto valdrá $B$), por lo que $B$ está sesgada a $Y$. 
+\par Esta técnica aprovecha este sesgo pero que define a $Y=(Y_1,\cdots,Y_n)$ a partir de una serie de bits conocida. En general por el desarrollo anterior, podemos ver que los bits generados serán sesgados a $Y$ permitiéndonos identificar que provienen de un modelo de lenguaje con la marca de agua explicada anteriormente. 
+\par Además RBC utiliza ECCs para modificar en medida de lo posible a $d_H(B,Y)$ haciendo que en general $d_H(B,Y)<\frac{n}{2}$. Esto mediante la selección de un mensaje $M\in\{0,1\}^k$ que por la \cref{def:ecc} hace que cuando tomemos un $[n,k,2t+1]$-ECC $\mathcal C$ seamos capaces de tener la capacidad de corregir hasta $t$ errores en $Y=\mathcal C(M)\in\{0,1\}^n$.
+\paragraph{Robust Binary Code.} Ahora, retomando todo lo detallado hasta este momento podemos detallar el algoritmo de Chao et Al\cite{chao_watermarking_2025}. 
+\par Teniendo $\mathcal V$ el vocabulario de tamaño $|\mathcal V|$ obtenido de nuestra corpora, definimos a $l=\lceil\log_2|\mathcal V|\rceil$ la cantidad de bits necesarios para almacenar cada token en binario, entonces tenemos a $\Gamma:\mathcal V\to\{0,1\}^l$ nuestro convertidor binario con su inversa $\Gamma^{-1}$\footnote{Donde podemos solucionar el problema de la inexistencia de la imagen inversa tomando una $l$ suficientemente grande de modo que podamos tomar arbitrariamente un elemento de $\{0,1\}^l$ para cada elemento de $\mathcal V$}. Tomamos también a un $[n,k,2t+1]$-ECC $\mathcal C$ y definimos a la ventana de entrada $w_{\textrm{in}}=\left\lceil\frac{k}{l}\right\rceil$, la ventana de salida $w_{\textrm{out}}=\left\lceil\frac{k}{l}\right\rceil$, y la variable aleatoria de cadenas de texto binario $R\sim\textrm{Unif}\{0,1\}^k$. De igual forma podemos tomar a nuestro modelo de lenguaje y tomar la distribución del $n+1$-ésimo token dada una ventana de $n$ tokens en su expresión binaria como
+\[p_{\textrm{bin}}(s_1,...,s_n)=p_{\textrm{bin}}(S_{n+1}|s_1,...,s_n)\]
+Por último, dados una cantidad de $w_{\textrm{in}}$ tokens $X_i$ generados por el modelo de lenguaje y $N$ la cantidad de tokens a generar:
+\begin{enumerate}
+    \item Iteramos desde $w_{\textrm{in}}+1$ hasta $N$. En cada iteración $i$ realizamos lo siguiente:
+    \begin{enumerate}
+        \item Definimos el mensaje $M\in\{0,1\}^k$ como $M=\Gamma(X_{i-w_{\textrm{in}}:(i-1)})_{1:k}  \oplus R$
+        \item Definimos a $Y=\mathcal{C}(M)\in\{0,1\}^n$
+        \item Creamos $w_{\textrm{out}}$ tokens de la siguiente manera
+        \begin{enumerate}
+            \item Tomamos una muestra 
+            desde $j=1$ hasta $n$ bits $B_j$ 
+            usando el muestreo sesgado a $Y$
+            descrito con anterioridad con $q=p_{\textrm{bin}}(X,B_{1:(j-1)})$
+            %$q=p_{\textrm_{bin}}(X,B_{1:(j-1)})$.
+            \item Posteriormente, tomamos una muestra desde el bit $j=n+1$ hasta el bit $w_{\textrm{out}}\cdot l$ con una Bernoulli de parámetro $q=p_{\textrm{bin}}(X,B_{1:(j-1)})$ con $X$ el texto generado con anterioridad
+            \item Por último regresamos el volcabulario correspondiente a $B$, es decir $\Gamma^{-1}(B)$
+        \end{enumerate}
+        \item Aumentamos a $i$ por $w_{\textrm{out}}$ unidades
+    \end{enumerate}
+    \item Al terminar las iteraciones, regresamos todos los tokens generados
+\end{enumerate}
+Con $\oplus$ el operador bit a bit XOR.
+
 \subsection{Detección de watermarking}
+Para llevar a cabo la detección de nuestra marca de agua tomamos la distancia de Hamming del mensaje $M_i$, es decir el obtenido en cada iteración del RBC, y lo comparamos con el mensaje que se obtiene aplicando el decodificador $\mathcal C^{-1}$ del bloque que se generó usando $M_i$. Tras cada cálculo, se le resta a $k$ y se realiza por cada una de las ventanas ($N-w_{\textrm{out}}-w_{\textrm{in}}+1$). Al final se realiza una prueba de comparación binomial, donde si se detecta que los tokens se generaron con un sesgo a nuestra distribución binomial, entonces se detectará la marca de agua.
 \section{Validación experimental}
-\subsection{GPT2, Llama}
-\subsection{Lenguaje Natural}
+Se puede consultar el consultar el \href{https://colab.research.google.com/drive/1GlNBf0DbZTonpNINr_cJQ9VolosbFdR4?usp=sharing}{notebook} dado con anterioridad para ver un ejemplo de cómo se implementan los algoritmos anteriores.
 \section{Conclusión}
-\subsection{Análisis de Resultados}
-\subsection{Limitaciones}
-\appendix
-\section{Pruebas detalladas de resultados teóricos}
+Aunque existían métodos de watermarking previos a la escritura de la referencia principal, los Códigos Correctores de Errores permiten sesgar de una manera eficiente y poco detectable a los textos generados por modelos de lenguaje. Esto a su vez nos permite lidiar con algunos de los problemas que uso descontrolado genera a la sociedad, potencialmente permitiendo identificar rápidamente desinformación y propaganda generada de manera automatizada.
 \nocite{*}
 \printbibliography
 \end{document}
